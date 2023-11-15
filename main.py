@@ -1,17 +1,22 @@
 import requests
 from textblob import TextBlob
-import re
-import  nltk
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
+import smtplib
+from email.mime.text import MIMEText
 
 
-nltk.download('stopwords')
-nltk.download('punkt')
 class SentimentAnalysis:
+    def __init__(self):
+        # Replace the following with your email configuration
+        self.sender_email = 'your_email@gmail.com'
+        self.receiver_email = 'recipient_email@gmail.com'
+        self.smtp_server = 'smtp.gmail.com'
+        self.smtp_port = 587
+        self.smtp_username = 'your_email@gmail.com'
+        self.smtp_password = 'your_email_password'
 
-    def DownloadData(self, search_query):
+    def DownloadData(self):
         # Replace 'YOUR_API_KEY' with your actual News API key
+        search_query = input("Enter the search query: ")
         api_key = '46671a0e40b7408ab0d020e3e9528b2f'
         url = f'https://newsapi.org/v2/everything?q={search_query}&apiKey={api_key}'
         result = requests.get(url)
@@ -36,21 +41,16 @@ class SentimentAnalysis:
 
                     if sentiment_score > 0:
                         positive_count += 1
-                        positive_reasons.extend(self.get_top_reasons(article_content))
+                        positive_reasons.append((article_content, sentiment_score))
                     elif sentiment_score < 0:
                         negative_count += 1
-                        negative_reasons.extend(self.get_top_reasons(article_content))
+                        negative_reasons.append((article_content, sentiment_score))
                     else:
                         neutral_count += 1
 
-                    print(f"Sentiment Score for '{article['title']}': {sentiment_score}")
-
-        if num_articles > 0:
-            average_sentiment = total_sentiment / num_articles
-            print(f"\nAverage Sentiment Score for all articles: {average_sentiment:.4f}")
-            print(f"Positive Articles: {positive_count}")
-            print(f"Negative Articles: {negative_count}")
-            print(f"Neutral Articles: {neutral_count}")
+            print(f"Sentiment Score  : {total_sentiment}")
+            if self.should_alert_user(sentiment_score):
+                self.send_email_alert(sentiment_score)
 
             print("\nTop 5 Reasons for Positive Sentiment:")
             self.print_top_reasons(positive_reasons)
@@ -62,27 +62,31 @@ class SentimentAnalysis:
         analysis = TextBlob(text)
         return analysis.sentiment.polarity
 
-    def get_top_reasons(self, text):
-        # Add your logic to extract and analyze the reasons for sentiment
-        # For simplicity, this function returns a list of words in the text.
-        text = re.sub(r'[^A-Za-z]', ' ', text.lower())
+    def should_alert_user(self, sentiment_score_threshold):
+        # You can set your own threshold for when to send an alert
+        return sentiment_score_threshold < -0.5
 
-        # Tokenize the text
-        words = word_tokenize(text)
+    def send_email_alert(self, sentiment_score):
+        subject = 'Sentiment Alert'
+        body = f'The sentiment score has dropped to {sentiment_score}. You might want to check it.'
 
-        # Remove stop words
-        stop_words = set(stopwords.words('english'))
-        words = [word for word in words if word not in stop_words]
+        message = MIMEText(body)
+        message['Subject'] = subject
+        message['From'] = self.sender_email
+        message['To'] = self.receiver_email
 
-        return words
+        with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
+            server.starttls()
+            server.login(self.smtp_username, self.smtp_password)
+            server.sendmail(self.sender_email, [self.receiver_email], message.as_string())
 
     def print_top_reasons(self, reasons):
-        from collections import Counter
-        reasons_counter = Counter(reasons)
-        for reason, count in reasons_counter.most_common(5):
-            print(f"{reason}: {count}")
+        reasons.sort(key=lambda x: abs(x[1]))
+        for i in range(5):
+            print("reason", i + 1, "-->")
+            print(reasons.pop())
+
 
 if __name__ == "__main__":
-    search_query = input("Enter the search query: ")
     sa = SentimentAnalysis()
-    sa.DownloadData(search_query)
+    sa.DownloadData()
