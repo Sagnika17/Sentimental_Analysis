@@ -1,5 +1,5 @@
 Sentiment Analyis using news API
-////////////////////////////////
+
 
 1)Import Libraries:
 
@@ -153,8 +153,8 @@ def print_top_reasons(self, reasons):
 *Sorts the reasons list based on the absolute value of sentiment scores.
 *Prints the top 5 reasons.
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////
- Now i shall discuss the sentiment analysis loop in detail:
+
+# Now i shall discuss the sentiment analysis loop in detail:
 
 total_sentiment = 0 (stores total sentiment score)
 num_articles = 0    (stores total no. of articles)
