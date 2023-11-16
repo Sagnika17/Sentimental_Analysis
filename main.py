@@ -7,12 +7,12 @@ from email.mime.text import MIMEText
 class SentimentAnalysis:
     def __init__(self):
         # Replace the following with your email configuration
-        self.sender_email = 'your_email@gmail.com'
-        self.receiver_email = 'recipient_email@gmail.com'
+        self.sender_email = 'iamsagnikabhat@gmail.com'
+        self.receiver_email = 'recipient@gmail.com'
         self.smtp_server = 'smtp.gmail.com'
         self.smtp_port = 587
-        self.smtp_username = 'your_email@gmail.com'
-        self.smtp_password = 'your_email_password'
+        self.smtp_username = 'iamsagnikabhat@gmail.com'
+        self.smtp_password = 'tfrb uxwt hopr lvpf'
 
     def DownloadData(self):
         # Replace 'YOUR_API_KEY' with your actual News API key
@@ -49,8 +49,8 @@ class SentimentAnalysis:
                         neutral_count += 1
 
             print(f"Sentiment Score  : {total_sentiment}")
-            if self.should_alert_user(sentiment_score):
-                self.send_email_alert(sentiment_score)
+            if self.should_alert_user(total_sentiment):
+                self.send_email_alert(total_sentiment)
 
             print("\nTop 5 Reasons for Positive Sentiment:")
             self.print_top_reasons(positive_reasons)
