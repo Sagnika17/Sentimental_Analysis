@@ -48,9 +48,9 @@ class SentimentAnalysis:
                     else:
                         neutral_count += 1
 
-            print(f"Sentiment Score  : {total_sentiment}")
-            if self.should_alert_user(total_sentiment):
-                self.send_email_alert(total_sentiment)
+            print(f"Average Sentiment Score  : {total_sentiment/num_articles}")
+            if self.should_alert_user(total_sentiment/num_articles):
+                self.send_email_alert(total_sentiment/num_articles)
 
             print("\nTop 5 Reasons for Positive Sentiment:")
             self.print_top_reasons(positive_reasons)
@@ -64,7 +64,7 @@ class SentimentAnalysis:
 
     def should_alert_user(self, sentiment_score_threshold):
         # You can set your own threshold for when to send an alert
-        return sentiment_score_threshold < -0.5
+        return sentiment_score_threshold < -0.2
 
     def send_email_alert(self, sentiment_score):
         subject = 'Sentiment Alert'
